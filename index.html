@@ -1,0 +1,2004 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Present Perfect vs Past Simple — Простий тренажер</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            perfect: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            past: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: translateY(8px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .animate-pop {
+      animation: popIn 0.25s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-indigo-100 selection:text-indigo-900 min-h-screen flex flex-col">
+
+  <!-- Верхня панель з прогресом та навігацією -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-3 pb-2.5">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-amber-500 flex items-center justify-center text-white font-extrabold text-lg shadow-sm">
+            VS
+          </div>
+          <div>
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 leading-tight">
+              Present Perfect <span class="text-slate-400 font-semibold">vs</span> Past Simple
+            </h1>
+            <p class="text-xs text-slate-500 font-medium">Теми: 💰 Money & 🚗 Driving • Простий тренажер українською</p>
+          </div>
+        </div>
+
+        <!-- Гейміфікація: зірочки та загальний прогрес -->
+        <div class="flex items-center gap-3 bg-slate-100 px-3.5 py-2 rounded-2xl border border-slate-200">
+          <div class="flex items-center gap-1.5" title="Зароблені бали">
+            <span class="text-amber-500 text-lg">★</span>
+            <span id="total-stars" class="font-extrabold text-slate-800 text-base">0</span>
+            <span class="text-xs text-slate-500 font-medium">/ <span id="max-stars">55</span></span>
+          </div>
+          <div class="w-24 sm:w-32 h-2.5 bg-slate-200 rounded-full overflow-hidden">
+            <div id="global-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 transition-all duration-500 rounded-full" style="width: 0%"></div>
+          </div>
+          <span id="global-progress-text" class="text-xs font-bold text-slate-600">0%</span>
+        </div>
+      </div>
+
+      <!-- Вкладки навігації: адаптивний перенос на десктопі, щоб усі 6 вкладок було видно -->
+      <nav id="nav-tabs" class="flex items-center flex-nowrap sm:flex-wrap gap-1.5 overflow-x-auto sm:overflow-visible no-scrollbar pb-1" aria-label="Розділи курсу">
+      </nav>
+    </div>
+  </header>
+
+  <!-- Основний контент -->
+  <main id="app-content" class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+  </main>
+
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <footer class="bg-white border-t border-slate-200 py-5 mt-12">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-slate-500">
+      <p>Навчальний тренажер з англійської граматики • Просте пояснення українською</p>
+      <button onclick="resetAllProgress()" class="text-slate-400 hover:text-rose-600 font-medium transition-colors underline underline-offset-4">
+        Скинути весь прогрес
+      </button>
+    </div>
+  </footer>
+
+  <script>
+    const VOCAB_MONEY = [
+      { en: "bank notes", uk: "банкноти, паперові купюри" },
+      { en: "coins", uk: "монети, дрібняк" },
+      { en: "currency", uk: "валюта" },
+      { en: "wages", uk: "зарплата (погодинна / тижнева)" },
+      { en: "salary", uk: "зарплата (місячний оклад)" },
+      { en: "make money", uk: "заробляти гроші, робити гроші" },
+      { en: "earn", uk: "заробляти (працею)" },
+      { en: "spend (spent)", uk: "витрачати гроші" },
+      { en: "waste", uk: "марнувати, тринькати гроші" },
+      { en: "lend (lent)", uk: "позичати комусь (давати в борг)" },
+      { en: "borrow", uk: "позичати у когось (брати в борг)" },
+      { en: "save (up)", uk: "заощаджувати, відкладати гроші" },
+      { en: "owe", uk: "бути винним гроші" },
+      { en: "pay in cash", uk: "платити готівкою" },
+      { en: "pay by card", uk: "платити карткою" },
+      { en: "bank account", uk: "банківський рахунок" },
+      { en: "well off", uk: "заможний, забезпечений" },
+      { en: "broke", uk: "на мілині, без грошей" },
+      { en: "debt", uk: "борг" },
+      { en: "ATM / cash machine", uk: "банкомат" },
+      { en: "enough", uk: "достатньо" },
+      { en: "short (of)", uk: "бракує (грошей / пального)" }
+    ];
+
+    const VOCAB_DRIVING = [
+      { en: "get in a car", uk: "сідати в машину" },
+      { en: "get out of a car", uk: "виходити з машини" },
+      { en: "start up", uk: "заводити двигун / авто" },
+      { en: "drive off", uk: "від'їжджати, рушати з місця" },
+      { en: "head to ...", uk: "вирушати в напрямку ..." },
+      { en: "speed up", uk: "прискорюватися, набирати швидкість" },
+      { en: "slow down", uk: "пригальмовувати, сповільнюватися" },
+      { en: "overtake (overtook / overtaken)", uk: "обганяти" },
+      { en: "brake", uk: "гальмувати / гальма" },
+      { en: "run out (of)", uk: "закінчуватися (про пальне, гроші)" },
+      { en: "fasten the seat belt", uk: "пристебнути ремінь безпеки" },
+      { en: "commit a traffic offence", uk: "порушити правила дорожнього руху (ПДР)" },
+      { en: "fine", uk: "штраф" },
+      { en: "fuel", uk: "пальне, бензин" },
+      { en: "traffic jam", uk: "затор, пробка на дорозі" },
+      { en: "traffic light", uk: "світлофор" },
+      { en: "get stuck in", uk: "застрягти в (заторі)" },
+      { en: "driving license", uk: "водійське посвідчення (права)" },
+      { en: "speed limit", uk: "обмеження швидкості" },
+      { en: "collect / pick up (from)", uk: "заїхати за кимось / забрати звідкись" }
+    ];
+
+    const TIME_MARKERS = [
+      { word: "yesterday", tense: "past", tip: "«Вчора» — вчорашній день вже повністю закінчився. Наприклад: I paid the fine yesterday." },
+      { word: "already", tense: "perfect", tip: "«Вже» — важливий результат на зараз. Наприклад: I have already saved up enough money." },
+      { word: "in 2022", tense: "past", tip: "«У 2022 році» — конкретна дата в минулому. Наприклад: She got her driving license in 2022." },
+      { word: "since Monday", tense: "perfect", tip: "«З понеділка» — дія почалася в понеділок і триває досі. Наприклад: He has been broke since Monday." },
+      { word: "an hour ago", tense: "past", tip: "Слово «ago» (тому) — залізний сигнал Past Simple! Наприклад: They drove off an hour ago." },
+      { word: "yet", tense: "perfect", tip: "«Ще / вже» (у питаннях та запереченнях) — чекаємо на результат зараз. Наприклад: Have you paid by card yet?" },
+      { word: "ever / never", tense: "perfect", tip: "«Колись / ніколи» — життєвий досвід до тепер. Наприклад: I have never committed a traffic offence." },
+      { word: "recently", tense: "perfect", tip: "«Нещодавно» — свіжа подія, пов'язана з теперішнім. Наприклад: We have recently opened a bank account." },
+      { word: "just", tense: "perfect", tip: "«Щойно» — дія завершилася секунду тому. Наприклад: The car has just run out of fuel!" },
+      { word: "for 2 hours (і досі)", tense: "perfect", tip: "«Протягом 2 годин» — якщо ситуація триває дотепер: We have been stuck in a traffic jam for 2 hours." },
+      { word: "last week", tense: "past", tip: "«Минулого тижня» — закритий період у минулому. Наприклад: He borrowed some bank notes last week." },
+      { word: "today (ще триває)", tense: "perfect", tip: "«Сьогодні» — якщо день ще не закінчився, беремо Present Perfect: How much have you spent today?" }
+    ];
+
+    const TASK1_DATA = [
+      {
+        sentence: "Look at the dashboard! We ______ of fuel. We need to stop at a petrol station right now!",
+        vocabTag: "🚗 run out of fuel — закінчилося пальне",
+        options: ["ran out", "have run out"],
+        correct: 1,
+        explanation: "Present Perfect (have run out): ми бачимо результат прямо зараз на панелі приладів — пальне закінчилося і машина скоро зупиниться."
+      },
+      {
+        sentence: "I ______ my salary yesterday, so today I can pay off my debt.",
+        vocabTag: "💰 salary / debt — місячна зарплата / борг",
+        options: ["got", "have got"],
+        correct: 0,
+        explanation: "Past Simple (got): є точний маркер часу «yesterday» (вчора). Це завершений факт у минулому."
+      },
+      {
+        sentence: "______ you ever ______ a traffic offence?",
+        vocabTag: "🚗 commit a traffic offence — порушити ПДР",
+        options: ["Did / commit", "Have / committed"],
+        correct: 1,
+        explanation: "Present Perfect (Have you ever committed): питаємо про життєвий досвід людини взагалі («чи ти колись порушував ПДР?»), без прив'язки до дати."
+      },
+      {
+        sentence: "The ATM didn't work last night, so I ______ in cash with some old bank notes and coins.",
+        vocabTag: "💰 ATM / pay in cash / bank notes / coins — банкомат / готівка / купюри / монети",
+        options: ["paid", "have paid"],
+        correct: 0,
+        explanation: "Past Simple (paid): подія відбулася в конкретний час у минулому — «last night» (минулої ночі)."
+      },
+      {
+        sentence: "Wait! You ______ your seat belt yet! Please fasten it before I start up the car.",
+        vocabTag: "🚗 fasten the seat belt / start up — пристебнути ремінь / завести авто",
+        options: ["didn't fasten", "haven't fastened"],
+        correct: 1,
+        explanation: "Present Perfect (haven't fastened): маркер «yet» (ще ні) показує, що дія досі не виконана на момент мовлення."
+      },
+      {
+        sentence: "My brother ______ a lot of money on useless gadgets last month, and now he is completely broke.",
+        vocabTag: "💰 waste money / broke — тринькати гроші / на мілині",
+        options: ["wasted", "has wasted"],
+        correct: 0,
+        explanation: "Past Simple (wasted): «last month» (минулого місяця) — закритий період часу в минулому."
+      },
+      {
+        sentence: "Hooray! I ______ enough money to buy my first car!",
+        vocabTag: "💰 save up / enough — заощадити / достатньо",
+        options: ["saved up", "have just saved up"],
+        correct: 1,
+        explanation: "Present Perfect (have just saved up): маркер «just» (щойно) і радісний результат прямо зараз — гроші вже зібрані!"
+      },
+      {
+        sentence: "The driver ______ at the red traffic light two minutes ago, so the police stopped him.",
+        vocabTag: "🚗 brake / traffic light — гальмувати / світлофор",
+        options: ["didn't brake", "hasn't braked"],
+        correct: 0,
+        explanation: "Past Simple (didn't brake): слово «ago» («two minutes ago» — дві хвилини тому) завжди вимагає Past Simple."
+      },
+      {
+        sentence: "Can you lend me 200 hryvnias? I ______ my wallet at home and I'm short of cash.",
+        vocabTag: "💰 lend / short of — позичити комусь / бракує готівки",
+        options: ["left", "have left"],
+        correct: 1,
+        explanation: "Present Perfect (have left): гаманець залишився вдома, тому грошей бракує прямо зараз. Важливий теперішній наслідок."
+      },
+      {
+        sentence: "She ______ in the car, started up the engine, and drove off towards the city centre.",
+        vocabTag: "🚗 get in a car / start up / drive off — сісти в авто / завести / від'їхати",
+        options: ["got", "has got"],
+        correct: 0,
+        explanation: "Past Simple (got): тут іде послідовність дій у минулому (сіла → завела → поїхала), це розповідь про минулі події."
+      },
+      {
+        sentence: "We ______ our destination yet, because we got stuck in a huge traffic jam.",
+        vocabTag: "🚗 head to / get stuck in a traffic jam — вирушати в / застрягти в заторі",
+        options: ["didn't reach", "haven't reached"],
+        correct: 1,
+        explanation: "Present Perfect (haven't reached): слово «yet» (ще ні) показує, що ми досі в дорозі і ще не доїхали."
+      },
+      {
+        sentence: "He ______ a lot of money since he started his new IT business.",
+        vocabTag: "💰 make money / earn — заробляти гроші",
+        options: ["made", "has made"],
+        correct: 1,
+        explanation: "Present Perfect (has made): «since» вказує на період, який почався в минулому і триває дотепер."
+      }
+    ];
+
+    const TASK2_DATA = [
+      {
+        context: "Порівняй дві ситуації з водійським посвідченням:",
+        sentenceA: "I lost my driving license yesterday.",
+        sentenceB: "I have lost my driving license.",
+        targetMeaning: "Я загубив права, тому зараз не маю права сідати за кермо (актуальна проблема зараз!).",
+        correctLetter: "B",
+        meaningA: "Я загубив права вчора (просто розповідь про вчорашній день, можливо, я їх уже знайшов).",
+        meaningB: "Я загубив права, тому зараз не маю права сідати за кермо (актуальна проблема зараз!).",
+        explanation: "Present Perfect (have lost) показує проблему, яка заважає нам прямо зараз. Past Simple (lost ... yesterday) просто констатує факт із вчорашнього дня."
+      },
+      {
+        context: "Порівняй два речення про зарплату та роботу:",
+        sentenceA: "He has worked hard and earned a good salary.",
+        sentenceB: "He worked hard and earned a good salary at his old job.",
+        targetMeaning: "Він багато працював і добре заробляв на старій роботі (але вже звільнився, це в минулому).",
+        correctLetter: "B",
+        meaningA: "Він наполегливо працював і тепер має гарну зарплату (результат відчутний зараз!).",
+        meaningB: "Він багато працював і добре заробляв на старій роботі (але вже звільнився, це в минулому).",
+        explanation: "Past Simple (worked ... at his old job) закриває історію про стару роботу. Present Perfect пов'язує зусилля з теперішнім фінансовим станом."
+      },
+      {
+        context: "Порівняй дві неприємності в дорозі:",
+        sentenceA: "We have run out of fuel.",
+        sentenceB: "We ran out of fuel near the traffic light.",
+        targetMeaning: "У нас щойно закінчилося пальне — ми стоїмо посеред дороги і не можемо їхати далі!",
+        correctLetter: "A",
+        meaningA: "У нас щойно закінчилося пальне — ми стоїмо посеред дороги і не можемо їхати далі!",
+        meaningB: "У нас закінчився бензин біля світлофора (це історія про випадок, який стався раніше).",
+        explanation: "Present Perfect кричить про теперішню ситуацію («ми застрягли без пального зараз»). Past Simple описує подію як минулий епізод."
+      },
+      {
+        context: "Порівняй дві фінансові ситуації:",
+        sentenceA: "She was broke for two months last year.",
+        sentenceB: "She has been broke for two months.",
+        targetMeaning: "Вона сидить без грошей вже два місяці (і досі на мілині!).",
+        correctLetter: "B",
+        meaningA: "Вона була на мілині два місяці минулого року (але зараз у неї вже є гроші).",
+        meaningB: "Вона сидить без грошей вже два місяці (і досі на мілині!).",
+        explanation: "Обидва речення мають «for two months», але Present Perfect (has been) тягне цю ситуацію в теперішнє, а Past Simple (was) залишає її в минулому році."
+      },
+      {
+        context: "Порівняй дві ситуації у заторі:",
+        sentenceA: "They have got stuck in a huge traffic jam.",
+        sentenceB: "They got stuck in a huge traffic jam on Friday.",
+        targetMeaning: "Вони застрягли у великому заторі у п'ятницю (та п'ятниця вже минула).",
+        correctLetter: "B",
+        meaningA: "Вони потрапили у величезний затор і досі там стоять (тому запізнюються зараз).",
+        meaningB: "Вони застрягли у великому заторі у п'ятницю (та п'ятниця вже минула).",
+        explanation: "Past Simple із маркером «on Friday» розповідає про минулу п'ятницю. Present Perfect пояснює, чому їх немає зараз."
+      },
+      {
+        context: "Порівняй оплату штрафу за порушення ПДР:",
+        sentenceA: "I have paid the fine.",
+        sentenceB: "I paid the fine in cash an hour ago.",
+        targetMeaning: "Я вже сплатив штраф (квитанція є, боргу перед поліцією більше немає!).",
+        correctLetter: "A",
+        meaningA: "Я вже сплатив штраф (квитанція є, боргу перед поліцією більше немає!).",
+        meaningB: "Я сплатив штраф готівкою годину тому (важливий сам факт і час оплати в минулому).",
+        explanation: "У реченні A важливий результат на зараз («штраф погашено»). У реченні B є чіткий маркер минулого «an hour ago»."
+      },
+      {
+        context: "Порівняй ситуації з позичанням грошей:",
+        sentenceA: "He borrowed $100 from me last week.",
+        sentenceB: "He has borrowed $100 from me.",
+        targetMeaning: "Він позичив у мене 100 доларів минулого тижня (конкретний момент у минулому).",
+        correctLetter: "A",
+        meaningA: "Він позичив у мене 100 доларів минулого тижня (конкретний момент у минулому).",
+        meaningB: "Він позичив у мене 100 доларів і досі їх не повернув (досі винен мені ці гроші).",
+        explanation: "Past Simple фіксує подію «last week». Present Perfect фокусується на теперішньому стані речей («гроші в нього, він мені винен»)."
+      },
+      {
+        context: "Порівняй від'їзд Тома на автомобілі:",
+        sentenceA: "Tom started up the car and drove off ten minutes ago.",
+        sentenceB: "Tom has started up the car and driven off.",
+        targetMeaning: "Том щойно завів машину і поїхав — ти буквально на секунду не встиг його застати!",
+        correctLetter: "B",
+        meaningA: "Том завів машину і поїхав десять хвилин тому (проста хронологія минулого).",
+        meaningB: "Том щойно завів машину і поїхав — ти буквально на секунду не встиг його застати!",
+        explanation: "Present Perfect підкреслює свіжий результат («його вже тут немає»). Past Simple з «ten minutes ago» описує минулу дію."
+      }
+    ];
+
+    const TASK3_DATA = [
+      {
+        situation: "Олена відкрила цей банківський рахунок у 2020 році. Зараз 2026 рік, і вона досі ним користується.",
+        timelineStart: "2020 рік",
+        timelineEnd: "ЗАРАЗ (користується досі)",
+        sentencePrefix: "Olena has had this bank account",
+        sentenceSuffix: "2020.",
+        options: ["for", "since"],
+        correct: 1,
+        explanation: "«2020» — це конкретна точка старту в минулому. З моментом початку завжди вживаємо SINCE (з 2020 року)."
+      },
+      {
+        situation: "Ми застрягли в заторі о 17:00. Зараз 18:15, машини досі майже не рухаються.",
+        timelineStart: "17:00",
+        timelineEnd: "18:15 (стоїмо досі)",
+        sentencePrefix: "We have been stuck in this traffic jam",
+        sentenceSuffix: "over an hour!",
+        options: ["for", "since"],
+        correct: 0,
+        explanation: "«Over an hour» (понад годину) — це відрізок часу (тривалість). Для відрізку часу використовуємо FOR."
+      },
+      {
+        situation: "Андрій відкладає гроші на нову машину вже 8 місяців. Він ще не зібрав потрібну суму, тому продовжує економити.",
+        timelineStart: "8 місяців тому",
+        timelineEnd: "ЗАРАЗ (досі збирає)",
+        sentencePrefix: "Andriy",
+        sentenceSuffix: "money for a new car for 8 months.",
+        options: ["saved up", "has saved up"],
+        correct: 1,
+        explanation: "Дія почалася 8 місяців тому і триває до моменту мовлення — це місток у теперішнє, тому Present Perfect (has saved up)."
+      },
+      {
+        situation: "Увага на логіку! Ірина відкладала гроші 8 місяців, а вчора нарешті купила машину і витратила всі заощадження.",
+        timelineStart: "8 місяців тому",
+        timelineEnd: "Вчора купила авто (ЗАВЕРШЕНО)",
+        sentencePrefix: "Iryna ______ money for 8 months, and yesterday she finally bought a car.",
+        sentenceSuffix: "",
+        options: ["has saved up", "saved up"],
+        correct: 1,
+        explanation: "Пастка! Процес заощадження вже ЗАКІНЧИВСЯ вчора, коли вона купила машину. Завершений період у минулому = Past Simple (saved up)!"
+      },
+      {
+        situation: "Максим позичив гроші на ремонт авто минулої п'ятниці. Сьогодні вівторок, і він досі винен банку чималий борг.",
+        timelineStart: "Минула п'ятниця",
+        timelineEnd: "ЗАРАЗ (досі винен)",
+        sentencePrefix: "Maksym has owed money to the bank",
+        sentenceSuffix: "last Friday.",
+        options: ["for", "since"],
+        correct: 1,
+        explanation: "«Last Friday» (минула п'ятниця) — це конкретна точка відліку, коли з'явився борг. Тому ставимо SINCE."
+      },
+      {
+        situation: "Їхня родина стала заможньою десять років тому, коли вони відкрили власний бізнес. Вони і зараз дуже забезпечені.",
+        timelineStart: "10 років тому",
+        timelineEnd: "ЗАРАЗ (заможні досі)",
+        sentencePrefix: "Their family",
+        sentenceSuffix: "well off for ten years.",
+        options: ["was", "has been"],
+        correct: 1,
+        explanation: "Вони досі заможні (well off)! Стан почався 10 років тому і триває дотепер — Present Perfect (has been)."
+      },
+      {
+        situation: "Водій їхав із перевищенням швидкості протягом 15 хвилин, але побачив поліцію і одразу пригальмував.",
+        timelineStart: "15 хв тому",
+        timelineEnd: "Пригальмував (ЗАВЕРШЕНО)",
+        sentencePrefix: "The driver ______ over the speed limit for 15 minutes, then he slowed down.",
+        sentenceSuffix: "",
+        options: ["has driven", "drove"],
+        correct: 1,
+        explanation: "Водій уже пригальмував («slowed down»), тобто перевищення швидкості вже припинилося в минулому. Беремо Past Simple (drove)."
+      },
+      {
+        situation: "Нам бракує готівки з того моменту, як ми заплатили величезний штраф за паркування.",
+        timelineStart: "Сплата штрафу",
+        timelineEnd: "ЗАРАЗ (досі бракує)",
+        sentencePrefix: "We have been short of money",
+        sentenceSuffix: "we paid that huge parking fine.",
+        options: ["for", "since"],
+        correct: 1,
+        explanation: "Після SINCE стоїть подія в минулому, яка стала точкою старту («since we paid...» — з того часу, як ми заплатили)."
+      },
+      {
+        situation: "У Тараса є водійське посвідчення вже 6 років. Він чудово керує автомобілем.",
+        timelineStart: "6 років тому",
+        timelineEnd: "ЗАРАЗ (має права досі)",
+        sentencePrefix: "Taras has had a driving license",
+        sentenceSuffix: "six years.",
+        options: ["for", "since"],
+        correct: 0,
+        explanation: "«Six years» — це тривалість (скільки часу?), тому обираємо FOR."
+      },
+      {
+        situation: "Після того як зламався банкомат, у касі не залишилося дрібних монет. Вони досі не з'явилися.",
+        timelineStart: "Ранок",
+        timelineEnd: "ЗАРАЗ (досі немає)",
+        sentencePrefix: "The shop",
+        sentenceSuffix: "any coins since this morning.",
+        options: ["didn't have", "hasn't had"],
+        correct: 1,
+        explanation: "«Since this morning» (з сьогоднішнього ранку і дотепер) — прямий сигнал Present Perfect (hasn't had)."
+      }
+    ];
+
+    const TASK4_DATA = [
+      {
+        ukrainian: "Я вже заплатив карткою.",
+        hint: "«Вже» = already (ставиться між have і дієсловом). Платити карткою = pay by card (pay → paid).",
+        answers: [
+          "i have already paid by card",
+          "ive already paid by card"
+        ],
+        words: ["paid", "I", "card", "did", "already", "have", "pay", "by", "in"],
+        explanation: "Present Perfect: I have already paid by card. Слово «already» підкреслює результат на зараз — оплата пройшла."
+      },
+      {
+        ukrainian: "Він заплатив готівкою вчора.",
+        hint: "Є точний час «вчора» (yesterday), тому беремо Past Simple. Платити готівкою = pay in cash.",
+        answers: [
+          "he paid in cash yesterday"
+        ],
+        words: ["cash", "yesterday", "paid", "has", "He", "by", "in", "card"],
+        explanation: "Past Simple: He paid in cash yesterday. Маркер «yesterday» вимагає Past Simple."
+      },
+      {
+        ukrainian: "Вона щойно пристебнула ремінь безпеки.",
+        hint: "«Щойно» = just. Пристебнути ремінь безпеки = fasten the seat belt (fasten → fastened).",
+        answers: [
+          "she has just fastened the seat belt",
+          "shes just fastened the seat belt",
+          "she has just fastened her seat belt",
+          "shes just fastened her seat belt"
+        ],
+        words: ["belt", "fastened", "She", "did", "seat", "just", "has", "fasten", "the"],
+        explanation: "Present Perfect: She has just fastened the seat belt. Слово «just» вказує на дію, що завершилася мить тому."
+      },
+      {
+        ukrainian: "У нас закінчилося пальне!",
+        hint: "Результат прямо зараз (машина зупиняється). Закінчитися = run out of (run - ran - run).",
+        answers: [
+          "we have run out of fuel",
+          "weve run out of fuel",
+          "we have run out of petrol",
+          "weve run out of petrol"
+        ],
+        words: ["fuel", "out", "We", "ran", "of", "have", "run", "coins"],
+        explanation: "Present Perfect: We have run out of fuel! Зверни увагу на 3-тю форму дієслова run: run — ran — run."
+      },
+      {
+        ukrainian: "Вони обігнали ту червону машину хвилину тому.",
+        hint: "«Хвилину тому» = a minute ago (Past Simple). Обганяти = overtake (overtake → overtook).",
+        answers: [
+          "they overtook that red car a minute ago",
+          "they overtook the red car a minute ago",
+          "they overtook that red car 1 minute ago"
+        ],
+        words: ["ago", "red", "overtook", "have", "They", "a", "car", "overtaken", "that", "minute"],
+        explanation: "Past Simple: They overtook that red car a minute ago. Слово «ago» завжди повертає нас у закрите минуле."
+      },
+      {
+        ukrainian: "Ти колись обмінював іноземну валюту в банкоматі?",
+        hint: "Життєвий досвід («колись» = ever). Валюта = currency, банкомат = ATM або cash machine. Обмінювати = change / exchange.",
+        answers: [
+          "have you ever changed currency at an atm",
+          "have you ever changed currency at the atm",
+          "have you ever exchanged currency at an atm",
+          "have you ever exchanged currency at the atm",
+          "have you ever changed currency at a cash machine",
+          "have you ever exchanged currency at a cash machine"
+        ],
+        words: ["currency", "ever", "ATM", "Did", "you", "changed", "an", "Have", "change", "at"],
+        explanation: "Present Perfect: Have you ever changed currency at an ATM? Питання про життєвий досвід без прив'язки до дати."
+      },
+      {
+        ukrainian: "Я ще не забрав друга з вокзалу.",
+        hint: "«Ще не» = yet. Забрати з = pick up from або collect from (pick → picked).",
+        answers: [
+          "i have not picked up my friend from the station yet",
+          "i havent picked up my friend from the station yet",
+          "i have not picked my friend up from the station yet",
+          "i havent picked my friend up from the station yet",
+          "i have not collected my friend from the station yet",
+          "i havent collected my friend from the station yet"
+        ],
+        words: ["yet", "friend", "picked", "from", "I", "station", "didn't", "my", "haven't", "the", "up"],
+        explanation: "Present Perfect: I haven't picked up my friend from the station yet. Маркер «yet» стоїть у кінці заперечення."
+      },
+      {
+        ukrainian: "Він завів машину і поїхав.",
+        hint: "Послідовність дій у минулому (Past Simple). Завести = start up (started up), поїхати = drive off (drove off).",
+        answers: [
+          "he started up the car and drove off",
+          "he started up a car and drove off"
+        ],
+        words: ["off", "car", "started", "and", "He", "drove", "has", "the", "up", "driven"],
+        explanation: "Past Simple: He started up the car and drove off. Дві послідовні дії в минулому."
+      },
+      {
+        ukrainian: "Ми не заробляємо достатньо грошей з минулого року.",
+        hint: "«З минулого року» = since last year (Present Perfect). Заробляти = earn або make (earn → earned).",
+        answers: [
+          "we have not earned enough money since last year",
+          "we havent earned enough money since last year",
+          "we have not made enough money since last year",
+          "we havent made enough money since last year"
+        ],
+        words: ["year", "earned", "money", "since", "We", "didn't", "enough", "haven't", "for", "last"],
+        explanation: "Present Perfect: We haven't earned enough money since last year. «Since» позначає початок періоду в минулому."
+      },
+      {
+        ukrainian: "Вона різко загальмувала перед світлофором.",
+        hint: "Конкретна подія в минулому (Past Simple). Гальмувати = brake (braked), перед світлофором = at the traffic light / before the traffic light.",
+        answers: [
+          "she braked at the traffic light",
+          "she braked before the traffic light",
+          "she braked hard at the traffic light"
+        ],
+        words: ["light", "braked", "the", "has", "She", "traffic", "brake", "at", "fine"],
+        explanation: "Past Simple: She braked at the traffic light. Опис конкретної дорожньої ситуації в минулому."
+      }
+    ];
+
+    const TASK5_DATA = [
+      {
+        category: "Контекст (Driving)",
+        question: "Oh no! I ______ a traffic offence and now I have to pay a big fine!",
+        options: ["have committed", "committed", "commit"],
+        correct: 0,
+        explanation: "Штраф потрібно платити прямо зараз («now I have to pay»), отже дія має прямий наслідок у теперішньому — Present Perfect (have committed)."
+      },
+      {
+        category: "Маркер часу (Money)",
+        question: "My boss ______ my wages into my bank account two hours ago.",
+        options: ["has transferred", "transfer", "transferred"],
+        correct: 2,
+        explanation: "«Two hours ago» (дві години тому) — залізний маркер Past Simple (transferred)."
+      },
+      {
+        category: "Тривалість (Driving)",
+        question: "How long ______ you ______ in this traffic jam?",
+        options: ["did / get stuck", "have / been stuck", "were / stuck"],
+        correct: 1,
+        explanation: "Питання «How long?» про ситуацію, яка триває досі (людина все ще стоїть у заторі) — Present Perfect (have you been stuck)."
+      },
+      {
+        category: "Знайди помилку (Money)",
+        question: "Яке з цих речень граматично ПРАВИЛЬНЕ?",
+        options: [
+          "I withdrew some bank notes from the cash machine yesterday.",
+          "I have withdrawn some bank notes from the cash machine yesterday.",
+          "I have withdrew some bank notes from the cash machine yesterday."
+        ],
+        correct: 0,
+        explanation: "Слово «yesterday» несумісне з Present Perfect! Правильно тільки Past Simple: I withdrew some bank notes... yesterday."
+      },
+      {
+        category: "Життєвий досвід (Driving)",
+        question: "My grandmother ______ never ______ a car in her life.",
+        options: ["did / drive", "have / drove", "has / driven"],
+        correct: 2,
+        explanation: "Життєвий досвід («ніколи в житті не водила авто») + «my grandmother» (she) вимагає «has never driven»."
+      },
+      {
+        category: "For vs Since (Money)",
+        question: "I have been short of money ______ I lent 500 dollars to my cousin.",
+        options: ["for", "since", "ago"],
+        correct: 1,
+        explanation: "Момент, коли я позичив гроші кузену — це точка старту в минулому, після якої мені бракує грошей. Тому «since»."
+      },
+      {
+        category: "Логіка дії (Driving)",
+        question: "The driver ______ up to overtake the truck, and then slowed down again.",
+        options: ["sped", "has speeded", "speed"],
+        correct: 0,
+        explanation: "Послідовність дій у минулому (прискорився, обігнав і знову сповільнився). Дієслово speed має форму Past Simple «sped»."
+      },
+      {
+        category: "Питання «Коли?» (Money)",
+        question: "When ______ you ______ off your debt to the bank?",
+        options: ["have / paid", "did / paid", "did / pay"],
+        correct: 2,
+        explanation: "Після питального слова «When?» (Коли?) завжди використовуємо Past Simple: «did you pay»."
+      },
+      {
+        category: "Знайди помилку (Driving)",
+        question: "Яке речення ПРАВИЛЬНЕ?",
+        options: [
+          "The bus didn't collect the passengers from the hotel yet.",
+          "The bus hasn't collected the passengers from the hotel yet.",
+          "The bus hasn't collect the passengers from the hotel yet."
+        ],
+        correct: 1,
+        explanation: "Маркер «yet» (ще ні) у запереченні потребує Present Perfect + 3-тя форма дієслова: hasn't collected."
+      },
+      {
+        category: "Логіка часу (Money)",
+        question: "Зараз лише 14:00, а він уже витратив усі свої монети та банкноти. Як це сказати?",
+        options: [
+          "He has already spent all his coins and bank notes today.",
+          "He spent all his coins and bank notes today.",
+          "He has already spend all his coins and bank notes today."
+        ],
+        correct: 0,
+        explanation: "Сьогоднішній день (today) ще триває і результат (порожній гаманець) видно зараз: He has already spent..."
+      },
+      {
+        category: "For vs Since (Money)",
+        question: "He has worked in this company and made good money ______ five years.",
+        options: ["since", "from", "for"],
+        correct: 2,
+        explanation: "«Five years» — це відрізок часу (тривалість), тому обираємо «for»."
+      },
+      {
+        category: "Завершена дія (Driving)",
+        question: "We ______ to the mountains at 6 a.m. and arrived there before noon.",
+        options: ["have headed", "headed", "head"],
+        correct: 1,
+        explanation: "Вказано точний час у минулому («at 6 a.m.») і дія вже завершилася прибуттям. Тому Past Simple (headed)."
+      },
+      {
+        category: "Контекст (Money)",
+        question: "Look at their new house and luxury car! They ______ very well off.",
+        options: ["have become", "became", "become"],
+        correct: 0,
+        explanation: "Ми бачимо будинок і машину прямо зараз — це видимий доказ того, що вони стали заможними (Present Perfect: have become)."
+      },
+      {
+        category: "Дія в минулому (Driving)",
+        question: "She ______ out of the car, locked the door, and walked into the bank.",
+        options: ["has got", "gets", "got"],
+        correct: 2,
+        explanation: "Ланцюжок завершених подій у минулому (вийшла → замкнула → зайшла в банк) — класичний Past Simple (got)."
+      },
+      {
+        category: "Логіка вибору (Money)",
+        question: "Can I pay by card here? Sorry, our terminal ______ down an hour ago.",
+        options: ["has broken", "broke", "breaks"],
+        correct: 1,
+        explanation: "Попри те, що термінал не працює зараз, у реченні є точний вказівник минулого часу «an hour ago» (годину тому), тому ставимо Past Simple (broke)."
+      }
+    ];
+
+    const TABS = [
+      { id: 'theory', label: 'Теорія та словник', icon: '📖', maxScore: 0 },
+      { id: 'task1', label: '1. Вибір часу', icon: '🎯', maxScore: TASK1_DATA.length },
+      { id: 'task2', label: '2. Влови різницю', icon: '⚖️', maxScore: TASK2_DATA.length },
+      { id: 'task3', label: '3. Тривалість', icon: '⏳', maxScore: TASK3_DATA.length },
+      { id: 'task4', label: '4. Переклад', icon: '✍️', maxScore: TASK4_DATA.length },
+      { id: 'task5', label: '5. Фінальний тест', icon: '🏆', maxScore: TASK5_DATA.length }
+    ];
+
+    const DEFAULT_STATE = {
+      activeTab: 'theory',
+      selectedMarkerIndex: 0,
+      vocabTab: 'money',
+      vocabOpen: true,
+      task1: {},
+      task2: {},
+      task3: {},
+      task4: {},
+      task5: {
+        answers: {},
+        submitted: false
+      }
+    };
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem('pp_vs_ps_ukr_v2');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          return {
+            ...DEFAULT_STATE,
+            ...parsed,
+            task5: { ...DEFAULT_STATE.task5, ...(parsed.task5 || {}) }
+          };
+        }
+      } catch (e) {
+        console.warn('Не вдалося завантажити прогрес:', e);
+      }
+      return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem('pp_vs_ps_ukr_v2', JSON.stringify(state));
+      } catch (e) {
+        console.warn('Не вдалося зберегти прогрес:', e);
+      }
+      updateHeaderStats();
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const colors = {
+        success: 'bg-emerald-600 text-white',
+        error: 'bg-rose-600 text-white',
+        info: 'bg-slate-800 text-white'
+      };
+      toast.className = `${colors[type] || colors.info} px-4 py-3 rounded-xl shadow-lg text-sm font-semibold animate-pop pointer-events-auto flex items-center gap-2`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 2800);
+    }
+
+    function resetAllProgress() {
+      state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+      saveState();
+      render();
+      showToast('Весь прогрес очищено. Можна починати заново!', 'info');
+    }
+
+    function getSectionScore(sectionKey) {
+      if (sectionKey === 'task5') {
+        if (!state.task5.submitted) return 0;
+        return Object.values(state.task5.answers || {}).filter(a => a && a.isCorrect).length;
+      }
+      const sectionData = state[sectionKey] || {};
+      return Object.values(sectionData).filter(a => a && a.isCorrect).length;
+    }
+
+    function updateHeaderStats() {
+      const maxStars = TABS.reduce((sum, tab) => sum + tab.maxScore, 0);
+      const totalStars = ['task1', 'task2', 'task3', 'task4', 'task5'].reduce(
+        (sum, key) => sum + getSectionScore(key),
+        0
+      );
+      const percent = maxStars > 0 ? Math.round((totalStars / maxStars) * 100) : 0;
+
+      const totalEl = document.getElementById('total-stars');
+      const maxEl = document.getElementById('max-stars');
+      const barEl = document.getElementById('global-progress-bar');
+      const textEl = document.getElementById('global-progress-text');
+
+      if (totalEl) totalEl.textContent = totalStars;
+      if (maxEl) maxEl.textContent = maxStars;
+      if (barEl) barEl.style.width = `${percent}%`;
+      if (textEl) textEl.textContent = `${percent}%`;
+    }
+
+    function renderNavTabs() {
+      const nav = document.getElementById('nav-tabs');
+      if (!nav) return;
+
+      nav.innerHTML = TABS.map(tab => {
+        const isActive = state.activeTab === tab.id;
+        const score = tab.maxScore > 0 ? getSectionScore(tab.id) : 0;
+        const isCompleted = tab.maxScore > 0 && score === tab.maxScore;
+
+        return `
+          <button
+            onclick="switchTab('${tab.id}')"
+            class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-1.5 border ${
+              isActive
+                ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900'
+            }"
+          >
+            <span>${tab.icon}</span>
+            <span>${tab.label}</span>
+            ${tab.maxScore > 0 ? `
+              <span class="px-1.5 py-0.5 rounded-md text-[11px] font-extrabold ${
+                isCompleted
+                  ? 'bg-emerald-500 text-white'
+                  : isActive
+                    ? 'bg-white/20 text-white'
+                    : 'bg-slate-100 text-slate-600'
+              }">
+                ${score}/${tab.maxScore}
+              </span>
+            ` : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      saveState();
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderTheory() {
+      const activeMarker = TIME_MARKERS[state.selectedMarkerIndex] || TIME_MARKERS[0];
+      const currentVocabList = state.vocabTab === 'money' ? VOCAB_MONEY : VOCAB_DRIVING;
+
+      return `
+        <div class="space-y-8 animate-pop">
+          <section class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold uppercase tracking-wider mb-3">
+              💡 Головний секрет
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-3">
+              Як раз і назавжди перестати їх плутати?
+            </h2>
+            <p class="text-slate-600 text-base sm:text-lg leading-relaxed mb-6">
+              Для українців обидва ці часи часто перекладаються минулим часом (<em>«я заплатив», «він поїхав»</em>).
+              Але для носія англійської різниця величезна: <strong>чи пов’язана ця дія з моментом «ЗАРАЗ»?</strong>
+            </p>
+
+            <div class="bg-gradient-to-r from-indigo-50 via-white to-amber-50 border-2 border-slate-200 rounded-2xl p-5 sm:p-6">
+              <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center text-2xl shrink-0">
+                  ❓
+                </div>
+                <div class="flex-1">
+                  <h3 class="text-lg font-extrabold text-slate-900 mb-1">
+                    Золоте правило: Запитай себе «КОЛИ?»
+                  </h3>
+                  <p class="text-slate-700 text-sm sm:text-base leading-relaxed">
+                    • Якщо ти можеш (або хочеш) відповісти <strong>«Коли саме в минулому?»</strong> (<em>вчора, у 2022, годину тому</em>) — це закрите минуле → <span class="font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">Past Simple</span>.<br class="hidden sm:inline" />
+                    • Якщо <strong>не важливо «коли»</strong>, а важливий <strong>результат зараз</strong>, життєвий досвід або дія <strong>триває досі</strong> → <span class="font-bold text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded">Present Perfect</span>.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border-2 border-indigo-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-4">
+                  <span class="px-3 py-1 rounded-xl bg-indigo-600 text-white text-sm font-extrabold">
+                    Present Perfect
+                  </span>
+                  <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
+                    have / has + V3 (-ed)
+                  </span>
+                </div>
+                <h3 class="text-xl font-extrabold text-slate-900 mb-2">
+                  Місток із минулого в ЗАРАЗ 🌉
+                </h3>
+                <p class="text-slate-600 text-sm mb-5">
+                  Дія сталася в минулому, але її наслідки ми бачимо або відчуваємо прямо зараз.
+                </p>
+
+                <div class="space-y-3.5 text-sm sm:text-base">
+                  <div class="p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-100">
+                    <div class="font-bold text-indigo-950 mb-1">1. Результат прямо зараз (Money & Driving)</div>
+                    <p class="text-slate-700 mb-1.5">💰 <em>I <strong>have just saved up</strong> enough money to buy a car!</em> — Я щойно заощадив достатньо грошей на авто!</p>
+                    <p class="text-slate-700">🚗 <em>He <strong>has run out</strong> of fuel!</em> — У нього закінчилося пальне (машина стоїть зараз)!</p>
+                  </div>
+
+                  <div class="p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-100">
+                    <div class="font-bold text-indigo-950 mb-1">2. Життєвий досвід (без конкретної дати)</div>
+                    <p class="text-slate-700">🚗 <em>I <strong>have never committed</strong> a traffic offence.</em> — Я ніколи в житті не порушував ПДР.</p>
+                  </div>
+
+                  <div class="p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-100">
+                    <div class="font-bold text-indigo-950 mb-1">3. Почалося в минулому і триває досі</div>
+                    <p class="text-slate-700">💰 <em>I <strong>have had</strong> this bank account <strong>since</strong> 2020.</em> — Я маю цей банківський рахунок з 2020 року (і досі ним користуюсь).</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-5 pt-4 border-t border-slate-100 text-xs text-slate-500 font-medium">
+                Ключове відчуття: <strong>«Ось результат!»</strong> або <strong>«І це досі правда»</strong>.
+              </div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border-2 border-amber-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-4">
+                  <span class="px-3 py-1 rounded-xl bg-amber-500 text-white text-sm font-extrabold">
+                    Past Simple
+                  </span>
+                  <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg">
+                    V2 (-ed) / did
+                  </span>
+                </div>
+                <h3 class="text-xl font-extrabold text-slate-900 mb-2">
+                  Закритий факт у минулому 📸
+                </h3>
+                <p class="text-slate-600 text-sm mb-5">
+                  Подія повністю залишилася в минулому. З моментом «зараз» вона вже не пов'язана.
+                </p>
+
+                <div class="space-y-3.5 text-sm sm:text-base">
+                  <div class="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-100">
+                    <div class="font-bold text-amber-950 mb-1">1. Відомий або вказаний час (Money & Driving)</div>
+                    <p class="text-slate-700 mb-1.5">💰 <em>I <strong>saved up</strong> $500 <strong>last month</strong>.</em> — Я відклав $500 минулого місяця.</p>
+                    <p class="text-slate-700">🚗 <em>He <strong>ran out</strong> of fuel on the highway <strong>yesterday</strong>.</em> — У нього закінчилося пальне на трасі вчора.</p>
+                  </div>
+
+                  <div class="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-100">
+                    <div class="font-bold text-amber-950 mb-1">2. Послідовність подій (історія)</div>
+                    <p class="text-slate-700">🚗 <em>She <strong>got</strong> in the car, <strong>fastened</strong> the seat belt and <strong>drove off</strong>.</em> — Сіла в авто, пристебнула ремінь і поїхала.</p>
+                  </div>
+
+                  <div class="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-100">
+                    <div class="font-bold text-amber-950 mb-1">3. Період у минулому вже закритий</div>
+                    <p class="text-slate-700">💰 <em>He <strong>was</strong> broke <strong>for two months</strong> last year.</em> — Минулого року він два місяці сидів без грошей (але вже заробив).</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-5 pt-4 border-t border-slate-100 text-xs text-slate-500 font-medium">
+                Ключове відчуття: <strong>«Це було тоді, історія закрита»</strong>.
+              </div>
+            </div>
+          </section>
+
+          <section class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+            <h3 class="text-xl font-extrabold text-slate-900 mb-2">
+              ⏳ Логіка тривалості: <span class="text-indigo-600">FOR</span> та <span class="text-indigo-600">SINCE</span> (з минулого до зараз)
+            </h3>
+            <p class="text-slate-600 text-sm sm:text-base mb-6">
+              Коли дія почалася в минулому і <strong>тягнеться до теперішнього моменту</strong>, ми беремо Present Perfect і два слова-помічники:
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
+                <div class="text-lg font-extrabold text-indigo-600 mb-1">SINCE + точка старту</div>
+                <p class="text-sm text-slate-600 mb-3">Вказує, <strong>КОЛИ саме</strong> дія почалася (відправна точка).</p>
+                <div class="space-y-1.5 text-xs font-bold text-slate-700">
+                  <div class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg">💰 I have had this bank account <strong>since 2020</strong>.</div>
+                  <div class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg">💰 They have been short of money <strong>since they paid the fine</strong>.</div>
+                </div>
+              </div>
+
+              <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
+                <div class="text-lg font-extrabold text-indigo-600 mb-1">FOR + відрізок часу</div>
+                <p class="text-sm text-slate-600 mb-3">Вказує, <strong>СКІЛЬКИ часу</strong> вже триває дія (тривалість).</p>
+                <div class="space-y-1.5 text-xs font-bold text-slate-700">
+                  <div class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg">🚗 She has been stuck in a traffic jam <strong>for an hour</strong>.</div>
+                  <div class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg">💰 He has owed me this debt <strong>for three weeks</strong>.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-indigo-950 text-white rounded-2xl p-5 overflow-hidden">
+              <div class="text-xs uppercase tracking-wider text-indigo-300 font-bold mb-3">Приклад: «Вона стоїть у заторі з 17:00 (вже цілу годину)»</div>
+              <div class="relative flex items-center justify-between pt-4 pb-2">
+                <div class="z-10 flex flex-col items-center">
+                  <span class="px-2.5 py-1 rounded-lg bg-amber-400 text-slate-900 font-extrabold text-xs mb-1.5">17:00 (SINCE)</span>
+                  <div class="w-4 h-4 rounded-full bg-amber-400 ring-4 ring-amber-400/30"></div>
+                  <span class="text-xs text-indigo-200 mt-1">Потрапила в затор</span>
+                </div>
+
+                <div class="flex-1 h-1.5 bg-gradient-to-r from-amber-400 to-emerald-400 mx-2 rounded-full relative">
+                  <span class="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-bold text-emerald-300">
+                    ← FOR an hour (стоїть досі) →
+                  </span>
+                </div>
+
+                <div class="z-10 flex flex-col items-center">
+                  <span class="px-2.5 py-1 rounded-lg bg-emerald-400 text-slate-900 font-extrabold text-xs mb-1.5">ЗАРАЗ (18:00)</span>
+                  <div class="w-4 h-4 rounded-full bg-emerald-400 ring-4 ring-emerald-400/30"></div>
+                  <span class="text-xs text-indigo-200 mt-1">Досі в заторі!</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+              <div>
+                <h3 class="text-xl font-extrabold text-slate-900">
+                  🧲 Інтерактивна шпаргалка: Слова-маркери
+                </h3>
+                <p class="text-sm text-slate-600">Натисни на будь-яке слово, щоб побачити правило та приклад:</p>
+              </div>
+              <div class="flex items-center gap-3 text-xs font-bold">
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-indigo-500"></span> Present Perfect</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500"></span> Past Simple</span>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2.5 mb-5">
+              ${TIME_MARKERS.map((m, idx) => {
+                const isSelected = idx === state.selectedMarkerIndex;
+                const isPerf = m.tense === 'perfect';
+                return `
+                  <button
+                    onclick="selectMarker(${idx})"
+                    class="px-3.5 py-2 rounded-xl text-sm font-bold transition-all border-2 ${
+                      isPerf
+                        ? isSelected
+                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-md scale-105'
+                          : 'bg-indigo-50 text-indigo-800 border-indigo-200 hover:bg-indigo-100'
+                        : isSelected
+                          ? 'bg-amber-500 text-white border-amber-500 shadow-md scale-105'
+                          : 'bg-amber-50 text-amber-900 border-amber-200 hover:bg-amber-100'
+                    }"
+                  >
+                    ${m.word}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <div class="p-4 sm:p-5 rounded-2xl border-2 ${
+              activeMarker.tense === 'perfect'
+                ? 'bg-indigo-50/60 border-indigo-200'
+                : 'bg-amber-50/60 border-amber-200'
+            }">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs font-extrabold uppercase px-2.5 py-0.5 rounded-md ${
+                  activeMarker.tense === 'perfect'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-amber-500 text-white'
+                }">
+                  ${activeMarker.tense === 'perfect' ? 'Present Perfect' : 'Past Simple'}
+                </span>
+                <span class="font-extrabold text-slate-900 text-base">«${activeMarker.word}»</span>
+              </div>
+              <p class="text-slate-700 text-sm sm:text-base">${activeMarker.tip}</p>
+            </div>
+          </section>
+
+          <section class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <div>
+                <h3 class="text-xl font-extrabold text-slate-900">
+                  📚 Активний словничок уроку: Money & Driving
+                </h3>
+                <p class="text-sm text-slate-600">Усі ці слова використовуються у вправах. Переглянь переклад перед стартом!</p>
+              </div>
+              <button
+                onclick="toggleVocabOpen()"
+                class="self-start sm:self-auto px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-extrabold transition-colors"
+              >
+                ${state.vocabOpen ? 'Згорнути словник ▲' : 'Розгорнути словник ▼'}
+              </button>
+            </div>
+
+            ${state.vocabOpen ? `
+              <div class="inline-flex rounded-2xl bg-slate-100 p-1.5 mb-5">
+                <button
+                  onclick="setVocabTab('money')"
+                  class="px-4 py-2 rounded-xl text-sm font-extrabold transition-all ${
+                    state.vocabTab === 'money'
+                      ? 'bg-white text-indigo-700 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }"
+                >
+                  💰 Money (${VOCAB_MONEY.length} слів)
+                </button>
+                <button
+                  onclick="setVocabTab('driving')"
+                  class="px-4 py-2 rounded-xl text-sm font-extrabold transition-all ${
+                    state.vocabTab === 'driving'
+                      ? 'bg-white text-indigo-700 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }"
+                >
+                  🚗 Driving (${VOCAB_DRIVING.length} слів)
+                </button>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                ${currentVocabList.map(v => `
+                  <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col justify-center">
+                    <span class="font-extrabold text-slate-900 text-sm">${v.en}</span>
+                    <span class="text-xs text-slate-600 mt-0.5">${v.uk}</span>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+          </section>
+
+          <div class="flex justify-end">
+            <button
+              onclick="switchTab('task1')"
+              class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+            >
+              <span>Перейти до Завдання 1: Вибір часу</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function setVocabTab(tab) {
+      state.vocabTab = tab;
+      saveState();
+      render();
+    }
+
+    function toggleVocabOpen() {
+      state.vocabOpen = !state.vocabOpen;
+      saveState();
+      render();
+    }
+
+    function selectMarker(idx) {
+      state.selectedMarkerIndex = idx;
+      saveState();
+      render();
+    }
+
+    function renderTask1() {
+      const score = getSectionScore('task1');
+      const total = TASK1_DATA.length;
+
+      return `
+        <div class="space-y-6 animate-pop">
+          <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-extrabold text-slate-900">🎯 Завдання 1: Обери правильний час</h2>
+              <p class="text-slate-600 text-sm sm:text-base mt-1">
+                Звертай увагу на слова-маркери та чи є зв’язок із теперішнім моментом.
+              </p>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <div class="px-4 py-2 rounded-2xl bg-indigo-50 text-indigo-800 font-extrabold text-sm">
+                Результат: ${score} / ${total}
+              </div>
+              ${Object.keys(state.task1).length > 0 ? `
+                <button onclick="resetSection('task1')" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors">
+                  Скинути
+                </button>
+              ` : ''}
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            ${TASK1_DATA.map((item, idx) => {
+              const userAns = state.task1[idx];
+              const isAnswered = userAns !== undefined;
+
+              return `
+                <div class="bg-white rounded-2xl p-5 sm:p-6 border-2 transition-all ${
+                  !isAnswered
+                    ? 'border-slate-200'
+                    : userAns.isCorrect
+                      ? 'border-emerald-300 bg-emerald-50/20'
+                      : 'border-rose-300 bg-rose-50/20'
+                }">
+                  <div class="flex items-start gap-3 mb-4">
+                    <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 font-extrabold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                      ${idx + 1}
+                    </span>
+                    <p class="text-lg sm:text-xl font-bold text-slate-900 leading-snug">
+                      ${item.sentence}
+                    </p>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-0 sm:pl-10">
+                    ${item.options.map((opt, optIdx) => {
+                      let btnClass = 'bg-slate-50 hover:bg-indigo-50 text-slate-800 border-slate-200 hover:border-indigo-300';
+                      let icon = '';
+
+                      if (isAnswered) {
+                        if (optIdx === item.correct) {
+                          btnClass = 'bg-emerald-600 text-white border-emerald-600 shadow-sm';
+                          icon = '✓ ';
+                        } else if (optIdx === userAns.selected && !userAns.isCorrect) {
+                          btnClass = 'bg-rose-600 text-white border-rose-600';
+                          icon = '✕ ';
+                        } else {
+                          btnClass = 'bg-slate-50 text-slate-400 border-slate-200 opacity-70';
+                        }
+                      }
+
+                      return `
+                        <button
+                          onclick="answerTask1(${idx}, ${optIdx})"
+                          ${isAnswered ? 'disabled' : ''}
+                          class="px-4 py-3 rounded-xl border-2 font-bold text-base text-left transition-all flex items-center justify-between ${btnClass}"
+                        >
+                          <span>${icon}${opt}</span>
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
+
+                  ${isAnswered ? `
+                    <div class="mt-4 sm:ml-10 p-4 rounded-xl text-sm leading-relaxed space-y-1.5 ${
+                      userAns.isCorrect
+                        ? 'bg-emerald-100/70 text-emerald-950 border border-emerald-200'
+                        : 'bg-rose-100/70 text-rose-950 border border-rose-200'
+                    }">
+                      <div class="inline-block px-2.5 py-0.5 rounded-md bg-white/80 text-slate-800 text-xs font-extrabold">
+                        ${item.vocabTag}
+                      </div>
+                      <div>
+                        <span class="font-extrabold">${userAns.isCorrect ? 'Чудово!' : 'Зверни увагу:'}</span> ${item.explanation}
+                      </div>
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="flex justify-between items-center pt-2">
+            <button onclick="switchTab('theory')" class="px-5 py-3 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-sm hover:bg-slate-50">
+              ← До теорії
+            </button>
+            <button onclick="switchTab('task2')" class="px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm sm:text-base shadow-md">
+              Завдання 2: Влови різницю →
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function answerTask1(qIdx, optIdx) {
+      if (state.task1[qIdx]) return;
+      const isCorrect = optIdx === TASK1_DATA[qIdx].correct;
+      state.task1[qIdx] = { selected: optIdx, isCorrect };
+      saveState();
+      render();
+      if (isCorrect) showToast('Правильно! +1 бал', 'success');
+    }
+
+    function renderTask2() {
+      const score = getSectionScore('task2');
+      const total = TASK2_DATA.length;
+
+      return `
+        <div class="space-y-6 animate-pop">
+          <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-extrabold text-slate-900">⚖️ Завдання 2: Влови різницю у змісті</h2>
+              <p class="text-slate-600 text-sm sm:text-base mt-1">
+                Речення виглядають майже однаково, але змінюється час — і змінюється реальність! Обери, <strong>яке речення (A чи B)</strong> відповідає вказаному значенню.
+              </p>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <div class="px-4 py-2 rounded-2xl bg-indigo-50 text-indigo-800 font-extrabold text-sm">
+                Результат: ${score} / ${total}
+              </div>
+              ${Object.keys(state.task2).length > 0 ? `
+                <button onclick="resetSection('task2')" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100">
+                  Скинути
+                </button>
+              ` : ''}
+            </div>
+          </div>
+
+          <div class="space-y-5">
+            ${TASK2_DATA.map((item, idx) => {
+              const userAns = state.task2[idx];
+              const isAnswered = userAns !== undefined;
+
+              return `
+                <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 transition-all ${
+                  !isAnswered
+                    ? 'border-slate-200'
+                    : userAns.isCorrect
+                      ? 'border-emerald-300'
+                      : 'border-rose-300'
+                }">
+                  <div class="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-3">
+                    Пара №${idx + 1} • ${item.context}
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5">
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                      <span class="inline-block px-2 py-0.5 rounded bg-slate-800 text-white text-xs font-extrabold mb-1.5">Речення A</span>
+                      <p class="text-base sm:text-lg font-extrabold text-slate-900">${item.sentenceA}</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                      <span class="inline-block px-2 py-0.5 rounded bg-slate-800 text-white text-xs font-extrabold mb-1.5">Речення B</span>
+                      <p class="text-base sm:text-lg font-extrabold text-slate-900">${item.sentenceB}</p>
+                    </div>
+                  </div>
+
+                  <div class="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100 mb-4">
+                    <p class="text-xs font-bold text-indigo-700 uppercase mb-1">Яке речення означає:</p>
+                    <p class="text-base sm:text-lg font-bold text-slate-900">«${item.targetMeaning}»</p>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    ${['A', 'B'].map(letter => {
+                      let btnStyle = 'bg-white hover:bg-indigo-50 border-slate-300 text-slate-800';
+                      if (isAnswered) {
+                        if (letter === item.correctLetter) {
+                          btnStyle = 'bg-emerald-600 text-white border-emerald-600';
+                        } else if (userAns.selected === letter && !userAns.isCorrect) {
+                          btnStyle = 'bg-rose-600 text-white border-rose-600';
+                        } else {
+                          btnStyle = 'bg-slate-50 text-slate-400 border-slate-200';
+                        }
+                      }
+
+                      return `
+                        <button
+                          onclick="answerTask2(${idx}, '${letter}')"
+                          ${isAnswered ? 'disabled' : ''}
+                          class="py-3 px-4 rounded-xl border-2 font-extrabold text-sm sm:text-base transition-all text-left ${btnStyle}"
+                        >
+                          Речення ${letter}: ${letter === 'A' ? item.sentenceA : item.sentenceB}
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
+
+                  ${isAnswered ? `
+                    <div class="mt-4 p-4 rounded-2xl text-sm space-y-2 ${
+                      userAns.isCorrect
+                        ? 'bg-emerald-50 text-emerald-950 border border-emerald-200'
+                        : 'bg-rose-50 text-rose-950 border border-rose-200'
+                    }">
+                      <div><strong>Речення A:</strong> ${item.meaningA}</div>
+                      <div><strong>Речення B:</strong> ${item.meaningB}</div>
+                      <div class="pt-1 border-t border-black/10">💡 ${item.explanation}</div>
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="flex justify-between items-center pt-2">
+            <button onclick="switchTab('task1')" class="px-5 py-3 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-sm hover:bg-slate-50">
+              ← Завдання 1
+            </button>
+            <button onclick="switchTab('task3')" class="px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm sm:text-base shadow-md">
+              Завдання 3: Логіка тривалості →
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function answerTask2(qIdx, letter) {
+      if (state.task2[qIdx]) return;
+      const isCorrect = letter === TASK2_DATA[qIdx].correctLetter;
+      state.task2[qIdx] = { selected: letter, isCorrect };
+      saveState();
+      render();
+      if (isCorrect) showToast('Точно в ціль! +1 бал', 'success');
+    }
+
+    function renderTask3() {
+      const score = getSectionScore('task3');
+      const total = TASK3_DATA.length;
+
+      return `
+        <div class="space-y-6 animate-pop">
+          <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-extrabold text-slate-900">⏳ Завдання 3: Логіка тривалості (з минулого до зараз)</h2>
+              <p class="text-slate-600 text-sm sm:text-base mt-1">
+                Прочитай ситуацію, подивись на шкалу часу та обери <strong>for / since</strong> або правильний час (дія <strong>триває досі</strong> чи <strong>вже закінчилася</strong>).
+              </p>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <div class="px-4 py-2 rounded-2xl bg-indigo-50 text-indigo-800 font-extrabold text-sm">
+                Результат: ${score} / ${total}
+              </div>
+              ${Object.keys(state.task3).length > 0 ? `
+                <button onclick="resetSection('task3')" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100">
+                  Скинути
+                </button>
+              ` : ''}
+            </div>
+          </div>
+
+          <div class="space-y-5">
+            ${TASK3_DATA.map((item, idx) => {
+              const userAns = state.task3[idx];
+              const isAnswered = userAns !== undefined;
+              const isOngoing = item.timelineEnd.includes('ЗАРАЗ') || item.timelineEnd.includes('досі');
+
+              return `
+                <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 transition-all ${
+                  !isAnswered
+                    ? 'border-slate-200'
+                    : userAns.isCorrect
+                      ? 'border-emerald-300'
+                      : 'border-rose-300'
+                }">
+                  <div class="flex items-start gap-3 mb-4">
+                    <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 font-extrabold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                      ${idx + 1}
+                    </span>
+                    <p class="text-slate-700 text-sm sm:text-base font-medium leading-relaxed">
+                      ${item.situation}
+                    </p>
+                  </div>
+
+                  <div class="bg-slate-900 text-white rounded-2xl px-4 py-3 mb-4 flex items-center justify-between text-xs sm:text-sm">
+                    <span class="font-bold text-amber-300">Початок: ${item.timelineStart}</span>
+                    <div class="flex-1 h-1 mx-3 rounded-full ${isOngoing ? 'bg-gradient-to-r from-amber-400 to-emerald-400' : 'bg-slate-600'}"></div>
+                    <span class="font-bold ${isOngoing ? 'text-emerald-400' : 'text-slate-300'}">${item.timelineEnd}</span>
+                  </div>
+
+                  <div class="text-lg sm:text-xl font-extrabold text-slate-900 mb-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    ${item.sentencePrefix}
+                    <span class="inline-block px-3 py-0.5 mx-1 rounded-lg border-b-2 border-indigo-500 bg-indigo-50 text-indigo-700">
+                      ${isAnswered ? item.options[item.correct] : '______'}
+                    </span>
+                    ${item.sentenceSuffix}
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3">
+                    ${item.options.map((opt, optIdx) => {
+                      let btnClass = 'bg-white hover:bg-indigo-50 text-slate-900 border-slate-300';
+                      if (isAnswered) {
+                        if (optIdx === item.correct) {
+                          btnClass = 'bg-emerald-600 text-white border-emerald-600';
+                        } else if (optIdx === userAns.selected && !userAns.isCorrect) {
+                          btnClass = 'bg-rose-600 text-white border-rose-600';
+                        } else {
+                          btnClass = 'bg-slate-50 text-slate-400 border-slate-200';
+                        }
+                      }
+
+                      return `
+                        <button
+                          onclick="answerTask3(${idx}, ${optIdx})"
+                          ${isAnswered ? 'disabled' : ''}
+                          class="py-3 px-4 rounded-xl border-2 font-extrabold text-base transition-all ${btnClass}"
+                        >
+                          ${opt}
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
+
+                  ${isAnswered ? `
+                    <div class="mt-4 p-4 rounded-xl text-sm leading-relaxed ${
+                      userAns.isCorrect
+                        ? 'bg-emerald-50 text-emerald-950 border border-emerald-200'
+                        : 'bg-rose-50 text-rose-950 border border-rose-200'
+                    }">
+                      <span class="font-extrabold">${userAns.isCorrect ? 'Супер!' : 'Пояснення:'}</span> ${item.explanation}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="flex justify-between items-center pt-2">
+            <button onclick="switchTab('task2')" class="px-5 py-3 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-sm hover:bg-slate-50">
+              ← Завдання 2
+            </button>
+            <button onclick="switchTab('task4')" class="px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm sm:text-base shadow-md">
+              Завдання 4: Переклад →
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function answerTask3(qIdx, optIdx) {
+      if (state.task3[qIdx]) return;
+      const isCorrect = optIdx === TASK3_DATA[qIdx].correct;
+      state.task3[qIdx] = { selected: optIdx, isCorrect };
+      saveState();
+      render();
+      if (isCorrect) showToast('Логіка бездоганна! +1 бал', 'success');
+    }
+
+    function normalizeEnglish(str) {
+      return str
+        .toLowerCase()
+        .replace(/[.,!?;:"'’`]/g, '')
+        .replace(/\bive\b/g, 'i have')
+        .replace(/\byouve\b/g, 'you have')
+        .replace(/\bweve\b/g, 'we have')
+        .replace(/\btheyve\b/g, 'they have')
+        .replace(/\bhes\b/g, 'he has')
+        .replace(/\bshes\b/g, 'she has')
+        .replace(/\bhavent\b/g, 'have not')
+        .replace(/\bhasnt\b/g, 'has not')
+        .replace(/\bdidnt\b/g, 'did not')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function renderTask4() {
+      const score = getSectionScore('task4');
+      const total = TASK4_DATA.length;
+
+      return `
+        <div class="space-y-6 animate-pop">
+          <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-extrabold text-slate-900">✍️ Завдання 4: Переклад на англійську</h2>
+              <p class="text-slate-600 text-sm sm:text-base mt-1">
+                Переклади речення, обираючи правильний час. Можеш <strong>друкувати вручну</strong> або збирати зі слів у <strong>Конструкторі</strong>!
+              </p>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <div class="px-4 py-2 rounded-2xl bg-indigo-50 text-indigo-800 font-extrabold text-sm">
+                Результат: ${score} / ${total}
+              </div>
+              ${Object.keys(state.task4).length > 0 ? `
+                <button onclick="resetSection('task4')" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100">
+                  Скинути
+                </button>
+              ` : ''}
+            </div>
+          </div>
+
+          <div class="space-y-5">
+            ${TASK4_DATA.map((item, idx) => {
+              const entry = state.task4[idx] || { userText: '', checked: false, isCorrect: false, mode: 'chips', chipOrder: [] };
+              const isChecked = entry.checked;
+              const mode = entry.mode || 'chips';
+              const chipSentence = (entry.chipOrder || []).map(wIdx => item.words[wIdx]).join(' ');
+
+              return `
+                <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 transition-all ${
+                  !isChecked
+                    ? 'border-slate-200'
+                    : entry.isCorrect
+                      ? 'border-emerald-300'
+                      : 'border-rose-300'
+                }">
+                  <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-600">
+                      Речення №${idx + 1}
+                    </span>
+
+                    ${!isChecked ? `
+                      <div class="inline-flex rounded-xl bg-slate-100 p-1 text-xs font-bold">
+                        <button
+                          onclick="setTask4Mode(${idx}, 'chips')"
+                          class="px-2.5 py-1 rounded-lg transition-all ${mode === 'chips' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}"
+                        >
+                          🧩 Конструктор
+                        </button>
+                        <button
+                          onclick="setTask4Mode(${idx}, 'type')"
+                          class="px-2.5 py-1 rounded-lg transition-all ${mode === 'type' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}"
+                        >
+                          ⌨️ Ввести текст
+                        </button>
+                      </div>
+                    ` : ''}
+                  </div>
+
+                  <p class="text-xl sm:text-2xl font-extrabold text-slate-900 mb-2">
+                    «${item.ukrainian}»
+                  </p>
+                  <p class="text-xs sm:text-sm text-slate-500 mb-4">
+                    💡 Підказка: ${item.hint}
+                  </p>
+
+                  ${mode === 'chips' && !isChecked ? `
+                    <div class="min-h-[54px] p-3 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-300 flex flex-wrap items-center gap-2 mb-3">
+                      ${(entry.chipOrder || []).length === 0
+                        ? '<span class="text-sm text-slate-400 font-medium">Натискай на слова нижче, щоб скласти переклад...</span>'
+                        : (entry.chipOrder || []).map((wIdx, pos) => `
+                            <button
+                              onclick="removeChipWord(${idx}, ${pos})"
+                              class="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-sm shadow-sm hover:bg-indigo-700 transition-all"
+                              title="Натисни, щоб прибрати слово"
+                            >
+                              ${item.words[wIdx]}
+                            </button>
+                          `).join('')
+                      }
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      ${item.words.map((word, wIdx) => {
+                        const used = (entry.chipOrder || []).includes(wIdx);
+                        return `
+                          <button
+                            onclick="addChipWord(${idx}, ${wIdx})"
+                            ${used ? 'disabled' : ''}
+                            class="px-3.5 py-2 rounded-xl border-2 font-bold text-sm transition-all ${
+                              used
+                                ? 'bg-slate-100 text-slate-300 border-slate-200 cursor-not-allowed'
+                                : 'bg-white hover:bg-indigo-50 text-slate-800 border-slate-300 hover:border-indigo-400 shadow-xs'
+                            }"
+                          >
+                            ${word}
+                          </button>
+                        `;
+                      }).join('')}
+                    </div>
+                  ` : `
+                    <div class="mb-4">
+                      <input
+                        id="input-task4-${idx}"
+                        type="text"
+                        value="${escapeHtml(isChecked ? (entry.userText || chipSentence) : entry.userText)}"
+                        oninput="updateTask4Text(${idx}, this.value)"
+                        onkeydown="if(event.key === 'Enter') checkTask4(${idx})"
+                        ${isChecked ? 'disabled' : ''}
+                        placeholder="Напиши переклад англійською..."
+                        class="w-full px-4 py-3.5 rounded-2xl border-2 text-base sm:text-lg font-bold outline-none transition-all ${
+                          !isChecked
+                            ? 'bg-slate-50 border-slate-300 focus:border-indigo-500 focus:bg-white text-slate-900'
+                            : entry.isCorrect
+                              ? 'bg-emerald-50 border-emerald-400 text-emerald-950'
+                              : 'bg-rose-50 border-rose-400 text-rose-950'
+                        }"
+                      />
+                    </div>
+                  `}
+
+                  ${!isChecked ? `
+                    <div class="flex items-center gap-3">
+                      <button
+                        onclick="checkTask4(${idx})"
+                        class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-sm transition-all"
+                      >
+                        Перевірити переклад
+                      </button>
+                      ${mode === 'chips' && (entry.chipOrder || []).length > 0 ? `
+                        <button
+                          onclick="clearChips(${idx})"
+                          class="px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100"
+                        >
+                          Очистити
+                        </button>
+                      ` : ''}
+                    </div>
+                  ` : `
+                    <div class="p-4 rounded-2xl text-sm space-y-1.5 ${
+                      entry.isCorrect
+                        ? 'bg-emerald-50 text-emerald-950 border border-emerald-200'
+                        : 'bg-rose-50 text-rose-950 border border-rose-200'
+                    }">
+                      <div class="font-extrabold">
+                        ${entry.isCorrect ? '✅ Правильний переклад!' : '❌ Є неточність.'}
+                      </div>
+                      ${!entry.isCorrect ? `
+                        <div>Еталонний варіант: <strong class="underline">${capitalizeSentence(item.answers[0])}</strong></div>
+                      ` : ''}
+                      <div>💡 ${item.explanation}</div>
+                    </div>
+                  `}
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="flex justify-between items-center pt-2">
+            <button onclick="switchTab('task3')" class="px-5 py-3 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-sm hover:bg-slate-50">
+              ← Завдання 3
+            </button>
+            <button onclick="switchTab('task5')" class="px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm sm:text-base shadow-md">
+              Завдання 5: Фінальний тест →
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function capitalizeSentence(str) {
+      if (!str) return '';
+      return str.charAt(0).toUpperCase() + str.slice(1) + '.';
+    }
+
+    function setTask4Mode(idx, mode) {
+      const current = state.task4[idx] || { userText: '', checked: false, isCorrect: false, chipOrder: [] };
+      state.task4[idx] = { ...current, mode };
+      saveState();
+      render();
+    }
+
+    function addChipWord(idx, wIdx) {
+      const current = state.task4[idx] || { userText: '', checked: false, isCorrect: false, mode: 'chips', chipOrder: [] };
+      const order = [...(current.chipOrder || []), wIdx];
+      state.task4[idx] = { ...current, chipOrder: order };
+      saveState();
+      render();
+    }
+
+    function removeChipWord(idx, pos) {
+      const current = state.task4[idx];
+      if (!current) return;
+      const order = [...(current.chipOrder || [])];
+      order.splice(pos, 1);
+      state.task4[idx] = { ...current, chipOrder: order };
+      saveState();
+      render();
+    }
+
+    function clearChips(idx) {
+      const current = state.task4[idx];
+      if (!current) return;
+      state.task4[idx] = { ...current, chipOrder: [] };
+      saveState();
+      render();
+    }
+
+    function updateTask4Text(idx, val) {
+      const current = state.task4[idx] || { checked: false, isCorrect: false, mode: 'type', chipOrder: [] };
+      state.task4[idx] = { ...current, userText: val };
+      try {
+        localStorage.setItem('pp_vs_ps_ukr_v2', JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function checkTask4(idx) {
+      const item = TASK4_DATA[idx];
+      const current = state.task4[idx] || { userText: '', mode: 'chips', chipOrder: [] };
+      const mode = current.mode || 'chips';
+
+      const rawAnswer = mode === 'chips'
+        ? (current.chipOrder || []).map(wIdx => item.words[wIdx]).join(' ')
+        : (current.userText || '');
+
+      if (!rawAnswer.trim()) {
+        showToast('Спочатку склади або введи речення!', 'info');
+        return;
+      }
+
+      const normalizedUser = normalizeEnglish(rawAnswer);
+      const isCorrect = item.answers.some(ans => normalizeEnglish(ans) === normalizedUser);
+
+      state.task4[idx] = {
+        ...current,
+        userText: rawAnswer,
+        checked: true,
+        isCorrect
+      };
+      saveState();
+      render();
+      if (isCorrect) showToast('Блискучий переклад! +1 бал', 'success');
+    }
+
+    function renderTask5() {
+      const answers = state.task5.answers || {};
+      const submitted = state.task5.submitted;
+      const answeredCount = Object.keys(answers).length;
+      const total = TASK5_DATA.length;
+      const score = getSectionScore('task5');
+
+      let weakCategories = [];
+      if (submitted) {
+        const missedMap = {};
+        TASK5_DATA.forEach((q, idx) => {
+          if (!answers[idx] || !answers[idx].isCorrect) {
+            missedMap[q.category] = (missedMap[q.category] || 0) + 1;
+          }
+        });
+        weakCategories = Object.entries(missedMap);
+      }
+
+      return `
+        <div class="space-y-6 animate-pop">
+          <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-extrabold text-slate-900">🏆 Завдання 5: Фінальний тест-мікс</h2>
+              <p class="text-slate-600 text-sm sm:text-base mt-1">
+                15 різнопланових питань на всі правила. Дай відповідь на всі питання та натисни <strong>«Завершити тест»</strong>.
+              </p>
+            </div>
+            <div class="px-4 py-2 rounded-2xl bg-slate-100 text-slate-800 font-extrabold text-sm shrink-0">
+              Відповідей: ${answeredCount} / ${total}
+            </div>
+          </div>
+
+          ${submitted ? `
+            <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-lg animate-pop">
+              <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div>
+                  <span class="inline-block px-3 py-1 rounded-full bg-white/15 text-indigo-200 text-xs font-bold uppercase tracking-wider mb-2">
+                    Результат фінального тесту
+                  </span>
+                  <h3 class="text-3xl sm:text-4xl font-extrabold mb-2">
+                    ${score} з ${total} балів (${Math.round((score / total) * 100)}%)
+                  </h3>
+                  <p class="text-indigo-100 text-sm sm:text-base max-w-xl">
+                    ${
+                      score === total
+                        ? 'Неймовірно! Ти бездоганно відчуваєш різницю між Present Perfect та Past Simple!'
+                        : score >= 11
+                          ? 'Чудовий результат! Ти впевнено орієнтуєшся в часах, залишилось шліфанути дрібниці.'
+                          : score >= 8
+                            ? 'Непоганий старт! Переглянь пояснення до помилок нижче — і наступного разу буде 15/15.'
+                            : 'Варто ще раз зазирнути у вкладку «Теорія» та звернути увагу на слова-маркери. У тебе все вийде!'
+                    }
+                  </p>
+                </div>
+
+                <button
+                  onclick="resetTask5()"
+                  class="px-5 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-sm shadow-md transition-all shrink-0"
+                >
+                  🔄 Спробувати ще раз
+                </button>
+              </div>
+
+              ${weakCategories.length > 0 ? `
+                <div class="mt-6 pt-5 border-t border-white/15">
+                  <div class="text-xs font-bold uppercase tracking-wider text-amber-300 mb-2">
+                    На що звернути увагу (теми з помилками):
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    ${weakCategories.map(([cat, count]) => `
+                      <span class="px-3 py-1.5 rounded-xl bg-white/10 text-white text-xs font-bold">
+                        ${cat} (${count} помил.)
+                      </span>
+                    `).join('')}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+
+          <div class="space-y-4">
+            ${TASK5_DATA.map((item, idx) => {
+              const userAns = answers[idx];
+              const selectedIdx = userAns ? userAns.selected : null;
+
+              let cardBorder = 'border-slate-200';
+              if (submitted) {
+                cardBorder = userAns && userAns.isCorrect ? 'border-emerald-300 bg-emerald-50/15' : 'border-rose-300 bg-rose-50/15';
+              } else if (selectedIdx !== null) {
+                cardBorder = 'border-indigo-300';
+              }
+
+              return `
+                <div class="bg-white rounded-2xl p-5 sm:p-6 border-2 transition-all ${cardBorder}">
+                  <div class="flex items-center justify-between gap-2 mb-2">
+                    <span class="text-xs font-extrabold text-slate-400">Питання ${idx + 1} з ${total}</span>
+                    <span class="text-xs font-bold px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-600">${item.category}</span>
+                  </div>
+
+                  <p class="text-lg font-extrabold text-slate-900 mb-4">
+                    ${item.question}
+                  </p>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    ${item.options.map((opt, optIdx) => {
+                      let btnStyle = 'bg-slate-50 hover:bg-indigo-50 text-slate-800 border-slate-200';
+
+                      if (!submitted) {
+                        if (selectedIdx === optIdx) {
+                          btnStyle = 'bg-indigo-600 text-white border-indigo-600 shadow-sm';
+                        }
+                      } else {
+                        if (optIdx === item.correct) {
+                          btnStyle = 'bg-emerald-600 text-white border-emerald-600';
+                        } else if (selectedIdx === optIdx && optIdx !== item.correct) {
+                          btnStyle = 'bg-rose-600 text-white border-rose-600';
+                        } else {
+                          btnStyle = 'bg-slate-50 text-slate-400 border-slate-200';
+                        }
+                      }
+
+                      return `
+                        <button
+                          onclick="selectTask5Option(${idx}, ${optIdx})"
+                          ${submitted ? 'disabled' : ''}
+                          class="px-4 py-3 rounded-xl border-2 font-bold text-sm sm:text-base text-left transition-all ${btnStyle}"
+                        >
+                          ${opt}
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
+
+                  ${submitted ? `
+                    <div class="mt-4 p-3.5 rounded-xl text-sm ${
+                      userAns && userAns.isCorrect
+                        ? 'bg-emerald-50 text-emerald-950 border border-emerald-200'
+                        : 'bg-rose-50 text-rose-950 border border-rose-200'
+                    }">
+                      💡 ${item.explanation}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          ${!submitted ? `
+            <div class="bg-white rounded-3xl p-5 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p class="text-sm text-slate-600 font-medium">
+                ${answeredCount < total
+                  ? `Залишилося відповісти ще на <strong>${total - answeredCount}</strong> пит.`
+                  : 'Усі відповіді обрано! Можна перевіряти результат.'}
+              </p>
+              <button
+                onclick="submitTask5()"
+                class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-base shadow-md transition-all"
+              >
+                Завершити тест і побачити результат
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function selectTask5Option(qIdx, optIdx) {
+      if (state.task5.submitted) return;
+      const isCorrect = optIdx === TASK5_DATA[qIdx].correct;
+      state.task5.answers[qIdx] = { selected: optIdx, isCorrect };
+      try {
+        localStorage.setItem('pp_vs_ps_ukr_v2', JSON.stringify(state));
+      } catch (e) {}
+      render();
+    }
+
+    function submitTask5() {
+      const answeredCount = Object.keys(state.task5.answers).length;
+      if (answeredCount < TASK5_DATA.length) {
+        showToast(`Дай відповідь на всі питання (залишилось ${TASK5_DATA.length - answeredCount})`, 'info');
+        return;
+      }
+      state.task5.submitted = true;
+      saveState();
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast('Фінальний тест завершено!', 'success');
+    }
+
+    function resetTask5() {
+      state.task5 = { answers: {}, submitted: false };
+      saveState();
+      render();
+    }
+
+    function resetSection(sectionKey) {
+      state[sectionKey] = {};
+      saveState();
+      render();
+      showToast('Відповіді розділу скинуто', 'info');
+    }
+
+    function render() {
+      renderNavTabs();
+      const container = document.getElementById('app-content');
+
+      switch (state.activeTab) {
+        case 'theory':
+          container.innerHTML = renderTheory();
+          break;
+        case 'task1':
+          container.innerHTML = renderTask1();
+          break;
+        case 'task2':
+          container.innerHTML = renderTask2();
+          break;
+        case 'task3':
+          container.innerHTML = renderTask3();
+          break;
+        case 'task4':
+          container.innerHTML = renderTask4();
+          break;
+        case 'task5':
+          container.innerHTML = renderTask5();
+          break;
+        default:
+          container.innerHTML = renderTheory();
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateHeaderStats();
+      render();
+    });
+  </script>
+</body>
+</html>
